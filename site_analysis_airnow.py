@@ -60,7 +60,12 @@ for r in range(len(region_name)):
 #selects only the data on the hour
 
 #seperate out the species and time data
+
 species = data[species_name]
+
+print('Single model data check..')
+print(species.shape) #[374,792])
+
 time_local = data['time_local']
 latitude = data['latitude']
 longitude = data['longitude']

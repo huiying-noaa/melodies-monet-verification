@@ -2,7 +2,7 @@
 
 module load ncl
 module load nco
-
+source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
 set -x
 
 # Loop over the lines in the STMP_LIST
@@ -29,14 +29,14 @@ echo "Working on experiment in directory ${exp}"
     
 #    fi
     # First check to see if the file is already created
-    if [[ -r ${monetdir}/dynf_${START_TIME}_${frame}.nc ]]; then
+    if [[ -r ${monetdir}/dynf_${START_TIME}${cycleHH}_${frame}.nc && ! -r ${cycledir}/dynf${frame}.nc ]]; then
        continue
     else
        # Grab what is needed out of the dyn files
        ncks -O -v coarsepm,hgtsfc,smoke,dust,delz,lon,lat,time,pfull,phalf,grid_xt,grid_yt,dpres,pressfc,tmp dynf${frame}.nc  temp_dynf${frame}.nc
        # Calculate air density
        export ncl_file=temp_dynf${frame}.nc
-       ncl /home/Jordan.Schnell/scripts/rrfs-sd_verification/calculate_rrfs_airdens.ncl
+       ncl /mnt/lfs6/BMC/wrfruc/hluo/monet_eva/workflow/melodies-monet-verification/calculate_rrfs_airdens.ncl
        # Append AOD
        ncks -A -v tprcp,ext550,tmp2m,vgrd10m,ugrd10m phyf${frame}.nc temp_dynf${frame}.nc
        ncap2 -O -s 'AOD550=ext550.total($pfull)' temp_dynf${frame}.nc temp_dynf${frame}.nc
@@ -50,9 +50,11 @@ echo "Working on experiment in directory ${exp}"
        ncap2 -O -s 'tprcp=1.e5*tprcp' temp_dynf${frame}.nc temp_dynf${frame}.nc
        ncap2 -O -s 'tmp2m=tmp2m-273.15' temp_dynf${frame}.nc temp_dynf${frame}.nc
        ncrename -v tprcp,precip_1hr temp_dynf${frame}.nc
-       ncks -O -3 temp_dynf${frame}.nc temp_dynf${frame}.nc
+       ncks -O -4 --ppc lat,lon=10 temp_dynf${frame}.nc temp_dynf${frame}.nc
+       # ncks -O -3 temp_dynf${frame}.nc temp_dynf${frame}.nc
        # Move the file to the monet directory
        mv temp_dynf${frame}.nc ${monetdir}/dynf_${START_TIME}${cycleHH}_${frame}.nc
+       python /mnt/lfs6/BMC/wrfruc/hluo/monet_eva/workflow/melodies-monet-verification/remove_pm25unit.py ${monetdir}/dynf_${START_TIME}${cycleHH}_${frame}.nc # to avoid double unit conversion for Jet env at source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
     fi
 #  done # nfiles loop
 done < ${STMP_LIST} # nexp loop

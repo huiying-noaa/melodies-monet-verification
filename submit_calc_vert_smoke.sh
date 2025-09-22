@@ -2,10 +2,11 @@
 
 ulimit -s unlimited
 
-source ~/.bashrc
+source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
+#source ~/.bashrc
 conda deactivate
-conda deactivate
-conda activate melodies-monet
+#conda deactivate
+#conda activate melodies-monet
 
 cd ${WORKDIR}
 for iframe in $(seq 0 24)

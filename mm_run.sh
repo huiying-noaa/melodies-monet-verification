@@ -1,6 +1,7 @@
 #!/bin/bash
-#
-source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet-develop
+
+source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
+#source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet-develop
 #source /mnt/lfs4/BMC/rtwbl/melodies-monet/miniconda3/bin/activate monet
 module load nco
 #
@@ -22,7 +23,7 @@ HH_endday=`${DATE} +%H -d "${END_TIME}"`
 #
 # start/end time is for yesterday, day N-1
 start_time_yaml=${YYYY_today}-${MM_today}-${DD_today}-00:00:00
-end_time_yaml=${YYYY_endday}-${MM_endday}-${DD_endday}-00:00:00
+end_time_yaml=${YYYY_endday}-${MM_endday}-${DD_endday}-23:00:00
 ts_start=`date +%s -d ${YYYY_today}-${MM_today}-${DD_today}`
 ts_end=`date +%s -d ${YYYY_endday}-${MM_endday}-${DD_endday}`
 nseconds=$((${ts_end}-${ts_start}))
@@ -494,7 +495,7 @@ has_data=0
 missing=0
   if [[ ${f3} == "rrfs" ]]; then   
      testfile=${datadir}/dynf*.nc
-     singletestfile=${datadir}/dynf_${YYYY}${MM}${DD}_001.nc
+     singletestfile=${datadir}/dynf_${YYYY}${MM}${DD}${!initime}_001.nc
   elif [[ ${f3} == "wrfchem" ]]; then
      testfile=${datadir}/wrfout*
      singletestfile=${datadir}/wrfout_d01_${YYYY}-${MM}-${DD}_00_00_00
@@ -507,6 +508,7 @@ missing=0
   else
         echo "Found sufficent files to process "${f2}" "${!initime}"Z, checking if variable exists"
 	ncdump -hv ${!modname} ${singletestfile}
+	ncdump -v pm25 ${singletestfile}
 	if [[ $? -eq 0 ]]; then
 		echo "File has variable..." 
         	has_data=1
@@ -520,6 +522,8 @@ missing=0
 #... Create model list arrays dependent on model choices 
 if [[ ${has_data} -eq 1 ]]; then    # if data exists
 mdl_list[0]=${f2}"_"${YYYY}${MM}${DD}"-"${!initime}"Z"
+echo "model list"
+echo "${mdl_list[0]}"
 # .. Observations ..
 #for now we just have airnow, can create namelist and code similar to above to add in more i.e balloon soundings 
 if [[ ${species} == "AOD550" ]]; then

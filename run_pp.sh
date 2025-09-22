@@ -1,7 +1,8 @@
 #!/bin/bash --login
 
 # Load the python environment
-source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet
+source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
+#source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet
 # Determine which package to run
 var_pkg=${VAR_PKG_2PLOT}
 

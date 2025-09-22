@@ -5,7 +5,8 @@ module load imagemagick
 DATE=/bin/date
 
 #source /mnt/lfs4/BMC/rtwbl/melodies-monet/miniconda3/bin/activate monet
-source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet
+#source /scratch1/BMC/wrf-chem/Jordan/miniconda3/bin/activate melodies-monet
+source /mnt/lfs5/BMC/rtwbl/rap-chem/miniconda/bin/activate monet
 
 todays_date=${START_TIME}
 

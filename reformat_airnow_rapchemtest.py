@@ -26,10 +26,11 @@ import kml2geojson
 # ... python reformat_airnow.py $START_TIME $END_TIME ...
 import sys
 start_time_reformat=sys.argv[1]
-end_time_reformat=sys.argv[2] 
+end_time_reformat=sys.argv[2]+' 23:00' 
 print(sys.argv[1])
 print(sys.argv[2])
 dates = pd.date_range(start=start_time_reformat,end=end_time_reformat,freq='H')
+
 #dates = pd.date_range(start='2021-05-28',end='2021-05-29',freq='H')
 
 
