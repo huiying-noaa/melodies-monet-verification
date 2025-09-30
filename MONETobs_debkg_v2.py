@@ -13,15 +13,18 @@ import sys
 import shutil
 
 # Input
-locsetpath='airnow_sites_epalist_20240716.csv' # Synced with jcsda/ioda, ['UNKNOWN', 'RURAL', 'SUBURBAN', 'URBAN AND CENTER CITY'] or blank   
-basepath='IODA_hourlyPM25baseline_v2r1.nc'  
-inpath='test/AIRNOW_20240720_20240731_MONET.nc' # Prepared by JS_reformat_airnow.py from Johana, tested
+#locsetpath='airnow_sites_epalist_20240716.csv' # Synced with jcsda/ioda, ['UNKNOWN', 'RURAL', 'SUBURBAN', 'URBAN AND CENTER CITY'] or blank   
+#basepath='IODA_hourlyPM25baseline_v2r1.nc'  
+#inpath='test/AIRNOW_20240720_20240731_MONET.nc' # Prepared by JS_reformat_airnow.py from Johana, tested
 #inpath='test/test5.airnow.20240724-20240725.nc' # Prepared by workflow from Jordan, not tested
+inpath = sys.argv[1]
+locsetpath = sys.argv[2]
+basepath = sys.argv[3]
 
 # Settings
 SearchDist_km=[100,30,30] # Max searching distances for both (baseline and obs) non-urban, one urban one non urban, and both urban; ORDER MATTERS
 KeepNoncalib=0 # Keep(1) or discart(0, default) sites w no matching baseline nearby
-SaveOri=1 # Save(1, default) copy or change file directly
+SaveOri=0 # Save(1, default) copy or change file directly
 
 if SaveOri==0:
     outpath=inpath
@@ -145,16 +148,16 @@ site_id_aqsioda = ds['siteid'][0,:] #longitude(y, x)
 site_lat_aqsioda = ds['latitude'][0,:]
 site_lon_aqsioda = ds['longitude'][0,:] 
 
-# For MONET workflow obs file, to be fully tested
-#variable = ds.variables['PM2.5']
-#print(variable._FillValue)
-#data_array = variable[:]
-#print(data_array[0:10,0,0:10])
-#old_fill_value = variable._FillValue
-#data_array[data_array == old_fill_value] = np.nan
-#variable[:] = data_array #
+# For MONET workflow obs that has improper FillValue
+variable = ds.variables['PM2.5']
+data = variable[:]
+old_fill_value = variable._FillValue
+#print(old_fill_value)
+#print(data[0:10,0,0:10])  
+data[data == old_fill_value] = np.nan
+#print(data[0:10,0,0:10])
 
-DS_aqsioda = ds['PM2.5'][:,0,:] #(time, y, x), time*site
+DS_aqsioda = data[:,0,:] #(time, y, x), time*site
 
 ## Calculate new baseline removed PM25 value
 DS_aqsfinal=np.zeros([len(site_time_aqsioda),1,len(site_id_aqsioda)])
@@ -196,6 +199,7 @@ for s in range(len(site_id_aqsioda)):
         DS_aqscali[s]=1
 DS_aqsfinal[DS_aqsfinal<0]=0.0
 DS_aqsfinal=np.round(DS_aqsfinal,2)
+#print(DS_aqsfinal[0:10,0,0:10])
 
 if KeepNoncalib==0:
     print(str(counter)+' out of '+str(len(site_id_aqsioda))+' observation sites discarded. Change KeepNoncalib to 1 to keep raw observation at these locations.')

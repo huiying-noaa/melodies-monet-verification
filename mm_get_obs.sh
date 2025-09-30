@@ -51,6 +51,8 @@ fi
 
 if [[ "${OBSTYPE}" == "AIRNOW" ]]; then
 python ${scriptsdir}/reformat_airnow_rapchemtest.py ${start_time_reformat} ${end_time_reformat}
+python ${scriptsdir}/MONETobs_debkg_v2.py test5.airnow.nc ${scriptsdir}/airnow_sites_epalist_20240716.csv ${scriptsdir}/IODA_hourlyPM25baseline_v2r1.nc
+
 if [[ -e test5.airnow.nc ]]; then
   mv test5.airnow.nc test5.airnow.${todays_date}-${endday_date}.nc   #moving the test5.nc generated from reformat to test5.nc.{todays_date}
   cp ${scriptsdir}/make_westoreastof97_airnow.ncl .
